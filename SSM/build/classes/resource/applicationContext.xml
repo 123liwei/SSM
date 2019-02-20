@@ -1,0 +1,34 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<context:component-scan base-package="com.bjpowernode.service"/>
+      <!-- c3p0连接池 -->
+     <bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+     	<property name="driverClass" value="com.mysql.jdbc.Driver" />
+     	<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/springdb"/>
+     	<property name="user" value="root"/>
+     	<property name="password" value="123456"></property>
+     </bean>
+     <!-- 注册SqlSessionFactoryBean,使用这个对象创建SqlSessionFactory -->
+     <bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+     	<!-- 注入数据源 -->
+     	<property name="dataSource" ref="myDataSource"/>
+     	<!-- 注入mybaits主配置文件 -->
+     	<property name="configLocation" value="classpath:resource/mybaits.xml"></property>
+     </bean>
+     <!-- 注册mybaits的扫描器，使用mybaits动态代理技术，创建Dao接口的实现类，即Dao对象MapperScannerConfigurer 内部使用sqlSession.getMapper(Dao接口) -->
+     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+     	<property name="sqlSessionFactoryBeanName" value="SqlSessionFactory"/>
+     	<property name="basePackage" value="com.bjpowernode.dao" />
+     </bean>   
+</beans>
+
